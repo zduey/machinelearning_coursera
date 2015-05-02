@@ -1,2 +1,4 @@
-# Python Code for Machine Learning course on Coursera
+# Python Code for Coursera Machine Learning
+## Author: Zach Duey
+## May 1, 2015
 
