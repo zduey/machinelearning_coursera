@@ -45,21 +45,21 @@ input('Program paused. Press enter to continue.\n')
 print('Plotting Data ...\n')
 data = pd.read_csv("ex1data1.txt",names=["X","y"])
 x = np.array(data.X)[:,None]
-y = np.array(data.y)[:,None]
+y = np.array(data.y)
 m = len(y) # number of training examples
 
 # Plot Data
 fig = plotData(x,y)
 fig.show()
 
-input('Program paused. Press enter to continue.\n');
+input('Program paused. Press enter to continue.\n')
 
 ## =================== Part 3: Gradient descent ===================
 print('Running Gradient Descent ...\n')
 
 ones = np.ones_like(x)
 X = np.hstack((ones,x)) # Add a column of ones to x
-theta = np.zeros((2,1)) # initialize fitting parameters
+theta = np.zeros(2) # initialize fitting parameters
 
 # Some gradient descent settings
 iterations = 1500
@@ -69,32 +69,23 @@ alpha = 0.01
 computeCost(X, y, theta)
 
 # run gradient descent
-theta = gradientDescent(X, y, theta, alpha, iterations);
+theta = gradientDescent(X, y, theta, alpha, iterations)
 
 # print theta to screen
-print('Theta found by gradient descent: ');
-print(theta[0], theta[1]);
+print('Theta found by gradient descent: ')
+print(theta[0],"\n", theta[1])
 
-"""
 # Plot the linear fit
-hold on; # keep previous plot visible
-plot(X(:,2), X*theta, '-')
-legend('Training data', 'Linear regression')
-hold off # don't overlay any more plots on this figure
+plt.plot(x,y,'rx',x,np.dot(X,theta),'b-')
+plt.legend(['Training Data','Linear Regression'])
+plt.show()
 
 # Predict values for population sizes of 35,000 and 70,000
-predict1 = [1, 3.5] *theta;
-print('For population = 35,000, we predict a profit of %f\n',...
-    predict1*10000);
-predict2 = [1, 7] * theta;
-print('For population = 70,000, we predict a profit of %f\n',...
-    predict2*10000);
+predict1 = np.dot([1, 3.5],theta)
+print('For population = 35,000, we predict a profit of ', predict1*10000)
 
-print('Program paused. Press enter to continue.\n');
-pause;i
-"""
+predict2 = np.dot([1, 7],theta)
+print('For population = 70,000, we predict a profit of ', predict2*10000)
 
-
-
-
+input('Program paused. Press enter to continue.\n');
 
