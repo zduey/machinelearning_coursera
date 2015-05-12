@@ -30,6 +30,8 @@ import matplotlib.pyplot as plt
 from warmUpExercise import warmUpExercise
 from plotData import plotData
 from computeCost import computeCost
+from gradientDescent import gradientDescent
+
 
 ## ==================== Part 1: Basic Function ====================
 print('Running warmUpExercise ... \n')
@@ -42,7 +44,7 @@ input('Program paused. Press enter to continue.\n')
 ## ======================= Part 2: Plotting =======================
 print('Plotting Data ...\n')
 data = pd.read_csv("ex1data1.txt",names=["X","y"])
-X = np.array(data.X)[:,None]
+x = np.array(data.X)[:,None]
 y = np.array(data.y)[:,None]
 m = len(y) # number of training examples
 
@@ -55,8 +57,8 @@ input('Program paused. Press enter to continue.\n');
 ## =================== Part 3: Gradient descent ===================
 print('Running Gradient Descent ...\n')
 
-ones = np.ones_like(X)
-X = np.hstack((ones,X)) # Add a column of ones to x
+ones = np.ones_like(x)
+X = np.hstack((ones,x)) # Add a column of ones to x
 theta = np.zeros((2,1)) # initialize fitting parameters
 
 # Some gradient descent settings
@@ -71,7 +73,7 @@ theta = gradientDescent(X, y, theta, alpha, iterations);
 
 # print theta to screen
 print('Theta found by gradient descent: ');
-print('%f %f \n', theta(1), theta(2));
+print(theta[0], theta[1]);
 
 """
 # Plot the linear fit

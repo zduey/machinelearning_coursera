@@ -1,3 +1,5 @@
+import numpy as np
+
 def computeCost(X, y, theta):
     """
     
