@@ -27,6 +27,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
 from warmUpExercise import warmUpExercise
 from plotData import plotData
 from computeCost import computeCost
@@ -88,4 +90,34 @@ predict2 = np.dot([1, 7],theta)
 print('For population = 70,000, we predict a profit of ', predict2*10000)
 
 input('Program paused. Press enter to continue.\n');
+
+
+## ============= Part 4: Visualizing J(theta_0, theta_1) =============
+print('Visualizing J(theta_0, theta_1) ...\n')
+
+# Grid over which we will calculate J
+theta0_vals = np.linspace(-10, 10, 100)
+theta1_vals = np.linspace(-1, 4, 100)
+
+# initialize J_vals to a matrix of 0's
+J_vals = np.zeros((len(theta0_vals),len(theta1_vals)))
+
+# Fill out J_Vals
+for i in range(len(theta0_vals)):
+    for j in range(len(theta1_vals)):
+        t = np.array([theta0_vals[i],theta1_vals[j]])
+        J_vals[i][j] = computeCost(X,y,t)
+
+
+# Surface plot using J_Vals
+fig = plt.figure()
+ax = plt.subplot(111,projection='3d')
+Axes3D.plot_surface(ax,theta0_vals,theta1_vals,J_vals,cmap=cm.coolwarm)
+plt.show()
+
+# Contour plot
+# Plot J_vals as 15 contours spaced logarithmically between 0.01 and 100
+fig = plt.figure()
+ax = plt.subplot(111)
+plt.contour(theta0_vals,theta1_vals,J_vals) # needs improved
 

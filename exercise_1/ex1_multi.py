@@ -1,59 +1,73 @@
 """
-  Machine Learning Online Class
-  Exercise 1: Linear regression with multiple variables
+Machine Learning Online Class
+Exercise 1: Linear regression with multiple variables
 
-  Instructions
-  ------------
+Instructions
+------------
 
-  This file contains code that helps you get started on the
-  linear regression exercise. 
+This file contains code that helps you get started on the
+linear regression exercise. 
 
-  You will need to complete the following functions in this 
-  exericse:
+You will need to complete the following functions in this 
+exericse:
 
-     warmUpExercise.py
-     plotData.py
-     gradientDescent.py
-     computeCost.py
-     gradientDescentMulti.py
-     computeCostMulti.py
-     featureNormalize.py
-     normalEqn.py
+ warmUpExercise.py
+ plotData.py
+ gradientDescent.py
+ computeCost.py
+ gradientDescentMulti.py
+ computeCostMulti.py
+ featureNormalize.py
+ normalEqn.py
 
-  For this part of the exercise, you will need to change some
-  parts of the code below for various experiments (e.g., changing
-  learning rates).
+For this part of the exercise, you will need to change some
+parts of the code below for various experiments (e.g., changing
+learning rates).
 """
-
-## Initialization
+# Initialization
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from warmUpExercise import warmUpExercise
+from plotData import plotData
+from computeCost import computeCost
+from gradientDescent import gradientDescent
+from featureNormalize import featureNormalize
+from normalEqn import normalEqn
 
 ## ================ Part 1: Feature Normalization ================
 
-print('Loading data ...\n')
+print('Loading data ...','\n')
 
 ## Load Data
-print('Plotting Data ...\n')
-data = pd.read_csv("ex1data1.txt",names=["X","y"])
-x = np.array(data.X)
-y = np.array(data.y)
-m = length(y) # number of training examples
+print('Plotting Data ...','\n')
 
+data = pd.read_csv("ex1data2.txt",names=["sz","bed","price"])
+s = np.array(data.sz)
+r = np.array(data.bed)
+p = np.array(data.price)
+m = len(r) # number of training examples
+
+# Design Matrix
+s = np.vstack(s)
+r = np.vstack(r)
+X = np.hstack((s,r))
 
 # Print out some data points
 print('First 10 examples from the dataset: \n')
-print(' x = [%.0f %.0f], y = %.0f \n', X[10] y[10])
+print(" size = ", s[:10],"\n"," bedrooms = ", r[:10], "\n")
 
 input('Program paused. Press enter to continue.\n')
-pause
 
 # Scale features and set them to zero mean
 print('Normalizing Features ...\n')
 
-[X mu sigma] = featureNormalize(X)
+X = featureNormalize(X)
 
 # Add intercept term to X
-X = [ones(m, 1) X]
-
+X = np.hstack((np.ones_like(s),X))
 
 ## ================ Part 2: Gradient Descent ================
 
@@ -73,87 +87,74 @@ X = [ones(m, 1) X]
 #               Finally, you should complete the code at the end
 #               to predict the price of a 1650 sq-ft, 3 br house.
 #
-# Hint: By using the 'hold on' command, you can plot multiple
-#       graphs on the same figure.
-#
 # Hint: At prediction, make sure you do the same feature normalization.
 #
 
 print('Running gradient descent ...\n')
 
 # Choose some alpha value
-alpha = 0.01
+alpha = 0.05
 num_iters = 400
 
 # Init Theta and Run Gradient Descent 
-theta = zeros(3, 1)
-[theta, J_history] = gradientDescentMulti(X, y, theta, alpha, num_iters)
+theta = np.zeros(3)
+
+# Multiple Dimension Gradient Descent
+theta, hist = gradientDescent(X, p, theta, alpha, num_iters)
 
 # Plot the convergence graph
-figure
-plot(1:numel(J_history), J_history, '-b', 'LineWidth', 2)
-xlabel('Number of iterations')
-ylabel('Cost J')
+fig = plt.figure()
+ax = plt.subplot(111)
+plt.plot(np.arange(len(hist)),hist ,'-b')
+plt.xlabel('Number of iterations')
+plt.ylabel('Cost J')
+plt.show()
 
 # Display gradient descent's result
 print('Theta computed from gradient descent: \n')
-print(' %f \n', theta)
-print('\n')
+print(theta,'\n')
 
 # Estimate the price of a 1650 sq-ft, 3 br house
-# ====================== YOUR CODE HERE ======================
+
 # Recall that the first column of X is all-ones. Thus, it does
 # not need to be normalized.
-price = 0 % You should change this
+normalized_specs = np.array([1,((1650-s.mean())/s.std()),((3-r.mean())/r.std())])
+price = np.dot(normalized_specs,theta) 
 
 
-# ============================================================
+print('Predicted price of a 1650 sq-ft, 3 br house (using gradient descent):\n ',
+      price)
 
-print(['Predicted price of a 1650 sq-ft, 3 br house ' ...
-         '(using gradient descent):\n $%f\n'], price)
-
-print('Program paused. Press enter to continue.\n')
-pause
+input('Program paused. Press enter to continue.\n')
 
 ## ================ Part 3: Normal Equations ================
-
 print('Solving with normal equations...\n')
 
-# ====================== YOUR CODE HERE ======================
-# Instructions: The following code computes the closed form 
-#               solution for linear regression using the normal
-#               equations. You should complete the code in 
-#               normalEqn.m
-#
-#               After doing so, you should complete this code 
-#               to predict the price of a 1650 sq-ft, 3 br house.
-#
+data = pd.read_csv("ex1data2.txt",names=["sz","bed","price"])
+s = np.array(data.sz)
+r = np.array(data.bed)
+p = np.array(data.price)
+m = len(r) # number of training examples
 
-## Load Data
-data = csvread('ex1data2.txt')
-X = data(:, 1:2)
-y = data(:, 3)
-m = length(y)
+# Design Matrix
+s = np.vstack(s)
+r = np.vstack(r)
+X = np.hstack((s,r))
 
 # Add intercept term to X
-X = [ones(m, 1) X]
+X = np.hstack((np.ones_like(s),X))
 
 # Calculate the parameters from the normal equation
-theta = normalEqn(X, y)
+theta = normalEqn(X, p)
 
 # Display normal equation's result
 print('Theta computed from the normal equations: \n')
-print(' %f \n', theta)
+print(theta)
 print('\n')
 
-
 # Estimate the price of a 1650 sq-ft, 3 br house
-# ====================== YOUR CODE HERE ======================
-price = 0 # You should change this
+price = np.dot([1,1650,3],theta) # You should change this
 
 
-# ============================================================
-
-print(['Predicted price of a 1650 sq-ft, 3 br house ' ...
-         '(using normal equations):\n $%f\n'], price)
-
+print('Predicted price of a 1650 sq-ft, 3 br house (using normal equations): \n',
+       price)
