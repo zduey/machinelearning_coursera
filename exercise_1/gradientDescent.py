@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import numpy as np
 from computeCost import computeCost
 
@@ -14,13 +15,6 @@ def gradientDescent(X, y, theta, alpha, num_iters):
     J_history = np.zeros(num_iters)
 
     for i in range(num_iters):
-        """
-        Non-Vectorized working version
-        theta0 = theta[0]-(alpha/m)*np.sum(np.dot((np.dot(X,theta)-y),X[:,0]))
-        theta1 = theta[1]-(alpha/m)*np.sum(np.dot((np.dot(X,theta)-y),X[:,1]))
-        theta[0] = theta0
-        theta[1] = theta1
-        """
         theta = theta - (alpha/m)*np.sum((np.dot(X,theta)-y)[:,None]*X,axis=0)
 
 	# Save the cost J in every iteration

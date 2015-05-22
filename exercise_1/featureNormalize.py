@@ -1,8 +1,10 @@
+#!/usr/bin/env python
+
 import numpy as np
 
 def featureNormalize(X):
     """
-    Normalizes the features in design matrix X
+    Normalizes (mean=0, std=1) the features in design matrix X
 
     returns -- Normalized version of X where the mean of each
                value of each feature is 0 and the standard deviation
@@ -27,3 +29,4 @@ def featureNormalize(X):
     
     return np.divide((X - np.mean(X,axis=0)),np.std(X,axis=0))
 
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Machine Learning Online Class
 Exercise 1: Linear regression with multiple variables
@@ -8,8 +10,7 @@ Instructions
 This file contains code that helps you get started on the
 linear regression exercise. 
 
-You will need to complete the following functions in this 
-exericse:
+The following files are required for this exericse:
 
  warmUpExercise.py
  plotData.py
@@ -20,10 +21,8 @@ exericse:
  featureNormalize.py
  normalEqn.py
 
-For this part of the exercise, you will need to change some
-parts of the code below for various experiments (e.g., changing
-learning rates).
 """
+
 # Initialization
 import pandas as pd
 import numpy as np
@@ -44,9 +43,9 @@ print('Loading data ...','\n')
 ## Load Data
 print('Plotting Data ...','\n')
 
-data = pd.read_csv("ex1data2.txt",names=["sz","bed","price"])
-s = np.array(data.sz)
-r = np.array(data.bed)
+data = pd.read_csv("ex1data2.txt",names=["size","bedrooms","price"])
+s = np.array(data.size)
+r = np.array(data.bedrooms)
 p = np.array(data.price)
 m = len(r) # number of training examples
 
@@ -61,7 +60,7 @@ print(" size = ", s[:10],"\n"," bedrooms = ", r[:10], "\n")
 
 input('Program paused. Press enter to continue.\n')
 
-# Scale features and set them to zero mean
+# Scale features to zero mean and standard deviation of 1
 print('Normalizing Features ...\n')
 
 X = featureNormalize(X)
@@ -70,25 +69,6 @@ X = featureNormalize(X)
 X = np.hstack((np.ones_like(s),X))
 
 ## ================ Part 2: Gradient Descent ================
-
-# ====================== YOUR CODE HERE ======================
-# Instructions: We have provided you with the following starter
-#               code that runs gradient descent with a particular
-#               learning rate (alpha). 
-#
-#               Your task is to first make sure that your functions - 
-#               computeCost and gradientDescent already work with 
-#               this starter code and support multiple variables.
-#
-#               After that, try running gradient descent with 
-#               different values of alpha and see which one gives
-#               you the best result.
-#
-#               Finally, you should complete the code at the end
-#               to predict the price of a 1650 sq-ft, 3 br house.
-#
-# Hint: At prediction, make sure you do the same feature normalization.
-#
 
 print('Running gradient descent ...\n')
 
@@ -158,3 +138,5 @@ price = np.dot([1,1650,3],theta) # You should change this
 
 print('Predicted price of a 1650 sq-ft, 3 br house (using normal equations): \n',
        price)
+
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4

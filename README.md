@@ -1,4 +1,8 @@
 # Python Code for Coursera Machine Learning
-## Author: Zach Duey
-## May 1, 2015
 
+This repo proivdes python-based solutions to the Coursera Machine Learning
+Course taught by Professor Andrew NG.
+
+In this first iteration, solutions mimic the MATLAB/Octave paradigm of matrix/vector
+arithmetic to complete the exercises. In many cases, there are simpler and more 
+'pythonic' ways to complete the exercises.

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import matplotlib.pyplot as plt
 
 def plotData(x, y):
@@ -25,4 +27,4 @@ def plotData(x, y):
     return fig
 
 
-
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
