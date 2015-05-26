@@ -2,20 +2,6 @@
 
 """
 Machine Learning Online Class - Exercise 1: Linear Regression
-
-The following files are needed in order to run this script:
-
-     warmUpExercise.py
-     plotData.py
-     gradientDescent.py
-     computeCost.py
-     gradientDescentMulti.py
-     computeCostMulti.py
-     featureNormalize.py
-     normalEqn.py
-
-
-
 """
 
 # Initialization
@@ -24,11 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-from warmUpExercise import warmUpExercise
-from plotData import plotData
-from computeCost import computeCost
-from gradientDescent import gradientDescent
-
+from ex1_utils import * # imports all functions in ex1_utils.py
 
 # ==================== Part 1: Basic Function ====================
 print('Running warmUpExercise ... \n')

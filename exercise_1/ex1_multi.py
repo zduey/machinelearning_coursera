@@ -3,24 +3,6 @@
 """
 Machine Learning Online Class
 Exercise 1: Linear regression with multiple variables
-
-Instructions
-------------
-
-This file contains code that helps you get started on the
-linear regression exercise. 
-
-The following files are required for this exericse:
-
- warmUpExercise.py
- plotData.py
- gradientDescent.py
- computeCost.py
- gradientDescentMulti.py
- computeCostMulti.py
- featureNormalize.py
- normalEqn.py
-
 """
 
 # Initialization
@@ -29,12 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-from warmUpExercise import warmUpExercise
-from plotData import plotData
-from computeCost import computeCost
-from gradientDescent import gradientDescent
-from featureNormalize import featureNormalize
-from normalEqn import normalEqn
+from ex1_utils import *
 
 ## ================ Part 1: Feature Normalization ================
 
