@@ -24,7 +24,8 @@ y = np.asarray(data["y"])
 print("Plotting data with + indicating (y = 1) examples and o indicating",
 " (y =0) examples.")
 
-fig = plotData(X, y)
+fig, ax = plotData(X, y)
+fig.show()
 
 input('\nProgram paused. Press enter to continue.\n')
 
@@ -63,25 +64,18 @@ res = minimize(costFunction,
 			'gtol': 1e-6,
 			'disp':True})
 
+theta = res.x
+
 # Print theta to screen
 print('Cost at theta found by minimize: \n', res.fun)
-print('theta: \n', res.x)
+print('theta: \n', theta)
+
 
 # Plot Boundary
-plotDecisionBoundary(theta, X, y);
+plotDecisionBoundary(theta, X, y)
 
-# Put some labels 
-hold on;
-# Labels and Legend
-xlabel('Exam 1 score')
-ylabel('Exam 2 score')
 
-# Specified in plot order
-legend('Admitted', 'Not admitted')
-hold off;
-
-fprintf('\nProgram paused. Press enter to continue.\n');
-pause;
+input('\nProgram paused. Press enter to continue.\n')
 
 ## ============== Part 4: Predict and Accuracies ==============
 #  After learning the parameters, you'll like to use it to predict the outcomes
@@ -97,15 +91,14 @@ pause;
 #  Predict probability for a student with score 45 on exam 1 
 #  and score 85 on exam 2 
 
-prob = sigmoid([1 45 85] * theta);
-fprintf(['For a student with scores 45 and 85, we predict an admission ' ...
-         'probability of %f\n\n'], prob);
+prob = sigmoid(np.dot([1,45,85],theta))
+print('For a student with scores 45 and 85, we predict an ',
+      'admission probability of ', prob)
 
-$ Compute accuracy on our training set
-p = predict(theta, X);
+# Compute accuracy on our training set
+p = predict(theta, X)
 
-fprintf('Train Accuracy: #f\n', mean(double(p == y)) * 100);
+print('Train Accuracy: \n', np.mean(p==y)*100)
 
-fprintf('\nProgram paused. Press enter to continue.\n');
-pause;
+input('Program paused. Press enter to continue.\n')
 
