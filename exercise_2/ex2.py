@@ -5,7 +5,9 @@ Machine Learning Online Class - Exercise 2: Logistic Regression
 ## Initialization
 import pandas as pd
 import numpy as np
+from scipy.optimize import minimize
 from ex2_utils import *
+
 
 ## Load Data
 #  The first two columns contains the exam scores and the third column
@@ -22,9 +24,9 @@ y = np.asarray(data["y"])
 print("Plotting data with + indicating (y = 1) examples and o indicating",
 " (y =0) examples.")
 
-plotData(X, y)
+fig = plotData(X, y)
 
-input('\nProgram paused. Press enter to continue.\n');
+input('\nProgram paused. Press enter to continue.\n')
 
 ## ============ Part 2: Compute Cost and Gradient ============
 #  In this part of the exercise, you will implement the cost and gradient
@@ -34,7 +36,7 @@ input('\nProgram paused. Press enter to continue.\n');
 #  Setup the data matrix appropriately, and add ones for the intercept term
 
 # Add intercept term to x and X_test
-X = np.hstack((np.ones_like(y),X))
+X = np.hstack((np.ones_like(y)[:,None],X))
 
 # Initialize fitting parameters
 initial_theta = np.zeros(3)
@@ -43,30 +45,29 @@ initial_theta = np.zeros(3)
 cost, grad = costFunction(initial_theta, X, y)
 
 print('Cost at initial theta (zeros): \n', cost)
-print('Gradient at initial theta (zeros): \n')
-print('\n', grad)
+print('Gradient at initial theta (zeros): \n',grad)
 
-input('\nProgram paused. Press enter to continue.\n')
+input('\nProgram paused. Press enter to continue.')
 
 
 ## ============= Part 3: Optimizing using fminunc  =============
 #  In this exercise, you will use a built-in function (fminunc) to find the
 #  optimal parameters theta.
 
-#  Set options for fminunc
-options = optimset('GradObj', 'on', 'MaxIter', 400);
-
-#  Run fminunc to obtain the optimal theta
-#  This function will return theta and the cost 
-[theta, cost] = ...
-	fminunc(@(t)(costFunction(t, X, y)), initial_theta, options);
+res = minimize(costFunction,
+	       initial_theta,
+	       method='Newton-CG',
+	       args=(X,y),
+	       jac=True, 
+	       options={'maxiter':400,
+			'gtol': 1e-6,
+			'disp':True})
 
 # Print theta to screen
-fprintf('Cost at theta found by fminunc: %f\n', cost);
-fprintf('theta: \n');
-fprintf(' %f \n', theta);
+print('Cost at theta found by minimize: \n', res.fun)
+print('theta: \n', res.x)
 
-% Plot Boundary
+# Plot Boundary
 plotDecisionBoundary(theta, X, y);
 
 # Put some labels 
