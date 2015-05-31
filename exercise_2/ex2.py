@@ -25,6 +25,11 @@ print("Plotting data with + indicating (y = 1) examples and o indicating",
 " (y =0) examples.")
 
 fig, ax = plotData(X, y)
+
+# Specified in plot order
+ax.legend(['Admitted', 'Not admitted'])
+
+
 fig.show()
 
 input('\nProgram paused. Press enter to continue.\n')
@@ -61,7 +66,6 @@ res = minimize(costFunction,
 	       args=(X,y),
 	       jac=True, 
 	       options={'maxiter':400,
-			'gtol': 1e-6,
 			'disp':True})
 
 theta = res.x
