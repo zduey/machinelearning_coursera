@@ -56,36 +56,6 @@ def predict(theta,X):
     """
     return np.where(np.dot(X,theta) > 5.,1,0)
 
-
-
-def plotDecisionBoundary(theta,X,y):
-    """
-    Plots the data points X and y into a new figure with the decision boundary
-    defined by theta with + for the positive examples and o for the negative
-    examples. X is asssumed to be either:
-        1) Mx3 matrix where the first column is all ones for the intercept
-        2) MxN with N>3, where the first column is all ones
-    """
-
-    # Start with the same plot as before
-    fig, ax = plotData(X[:,1:],y)
-
-    if len(X[0]<=3):
-        # Choose two endpoints and plot the line between them
-        plot_x = np.array([min(X[:,1])-2,max(X[:,2])+2])
-
-        # Calculate the decision boundary line
-        plot_y = (-1.0/theta[2])*(theta[1]*plot_x + theta[0])
-
-        # Add boundary and adjust axes
-        ax.plot(plot_x,plot_y)
-        ax.legend(['Admitted','Fail','Pass'])
-        ax.set_xbound(30,100)
-        ax.set_ybound(30,100)
-
-
-    return (fig,ax)
-
 def mapFeatureVector(X1,X2):
     """
     Feature mapping function to polynomial features. Maps the two features
@@ -123,39 +93,21 @@ def costFunctionReg(theta,X,y,reg_param):
        (reg_param/m)*np.sum(theta**2))
 
     # Gradient
-    grad = ((np.sum((sigmoid(np.dot(X,theta))-y)[:,None]*X,axis=0))/m +
-            (reg_param/m)*theta)
-    # Replace gradient for theta_0 with non-regularized gradient
-    print("Original theta_0: ",grad[0])
-    grad[0] = grad[0] - (reg_param/m)*theta[0] 
-    print("Adjusted theta_0: ",grad[0])
-    return (J, grad)
+    
+    # Non-regularized 
+    grad_0 = (np.sum((sigmoid(np.dot(X,theta))-y)[:,None]*X,axis=0)/m)
+    
+    # Regularized
+    grad_reg = grad_0 + (reg_param/m)*theta
 
+
+    # Replace gradient for theta_0 with non-regularized gradient
+    grad_reg[0] = grad_0[0] 
+    
+    return J
 
 """
-def plotDecisionBoundary(theta, X, y):
-    Plots the data points X and y into a new figure with the decision boundary
-    defined by theta with + for the positive examples and o for the negative 
-    examples. X is assumed to be a either 
-    1) Mx3 matrix, where the first column is an all-ones column for the 
-       intercept.
-    2) MxN, N>3 matrix, where the first column is all-ones
-    
-    
-    # Start with same plot as before
-    fig, ax = plotData(X[:,1:], y)
-
-    if len(X[0]) <= 3:
-	# Choose two endpoints and plot the line between them
-        plot_x = np.array([min(X[:,1])-2,max(X[:,2])+2])
-	# Calculate the decision boundary line
-	plot_y = (-1./theta[2])*(theta[1]*plot_x + theta[0])
-	# Plot and adjust axis
-	ax.plot(plot_x,plot_y)
-	ax.legend(['Admitted','Not admitted', 'Decision Boundary'])
-	ax.set_xbound(30,100)
-	ax.set_ybound(30,100)
-    else
+else
         # Here is the grid range
         u = linspace(-1, 1.5, 50)
         v = linspace(-1, 1.5, 50)
@@ -172,5 +124,51 @@ def plotDecisionBoundary(theta, X, y):
         # Plot z = 0
         # Notice you need to specify the range [0, 0]
         contour(u, v, z, [0, 0], 'LineWidth', 2)
-    return (fig, ax)
 """
+
+def plotDecisionBoundary(theta,X,y):
+    """
+    Plots the data points X and y into a new figure with the decision boundary
+    defined by theta with + for the positive examples and o for the negative
+    examples. X is asssumed to be either:
+        1) Mx3 matrix where the first column is all ones for the intercept
+        2) MxN with N>3, where the first column is all ones
+    """
+
+    # Start with the same plot as before
+    fig, ax = plotData(X[:,1:],y)
+    
+    """
+    if len(X[0]<=3):
+        # Choose two endpoints and plot the line between them
+        plot_x = np.array([min(X[:,1])-2,max(X[:,2])+2])
+
+        # Calculate the decision boundary line
+        plot_y = (-1.0/theta[2])*(theta[1]*plot_x + theta[0])
+
+        # Add boundary and adjust axes
+        ax.plot(plot_x,plot_y)
+        ax.legend(['Admitted','Fail','Pass'])
+        ax.set_xbound(30,100)
+        ax.set_ybound(30,100)
+
+    else:
+    """
+
+    # Create grid space
+    u = np.linspace(-1,1.5,50)
+    v = np.linspace(-1,1.5,50)
+    z = np.zeros((len(u),len(v)))
+    
+    # Evaluate z = theta*x over values in the gridspace
+    for i in range(len(u)):
+        for j in range(len(v)):
+            z[i][j] = np.dot(mapFeatureVector(np.array([u[i]]),
+		      np.array([v[j]])),theta)
+    
+    # Plot contour
+    ax.contour(u,v,z,levels=[0])
+
+    return (fig,ax)
+
+

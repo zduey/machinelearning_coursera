@@ -28,6 +28,8 @@ ax.set_ylabel('Microchip test 2')
 
 fig.show()
 
+input('\nProgram paused. Press enter to continue.\n')
+
 ## Part 1 -- Regularized Logistic Regression
 X = mapFeatureVector(X[:,0],X[:,1])
 
@@ -37,15 +39,31 @@ initial_theta = np.zeros(len(X[0,:]))
 # Set regularization parameter to 1
 reg_param = 1.0
 
-# Optimize for theta
+# Optimize for theta letting python choose method
+# Note: Methods with user-supplied gradient do not
+#       converge as nicely in this case.
 res = minimize(costFunctionReg,
 	       initial_theta,
-	       method='Newton-CG',
 	       args=(X,y,reg_param),
-	       jac=True, 
+	       tol=1e-6,
 	       options={'maxiter':400,
 			'disp':True})
 
+
 theta = res.x
 
+fig.clear()
+fig, ax = plotDecisionBoundary(theta,X,y)
 
+# Specified in plot order
+ax.legend(['Pass', 'Fail','Decision Boundary'])
+
+# Labels
+ax.set_xlabel('Microchip test 1')
+ax.set_ylabel('Microchip test 2')
+ax.set_title('Lambda = 1')
+
+
+fig.show()
+
+input('\nProgram paused. Press enter to continue.\n')
