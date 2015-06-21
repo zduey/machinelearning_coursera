@@ -4,6 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
+import multiprocessing as mp
 
 def displayData(X):
     """
@@ -40,11 +41,23 @@ def lrCostFunction(theta,X,y,reg_param):
     J =((np.sum(-y*np.log(sigmoid(np.dot(X,theta)))-
        (1-y)*(np.log(1-sigmoid(np.dot(X,theta))))))/m +
        (reg_param/m)*np.sum(theta**2))
+   
 
+    # Gradient
+    
+    # Non-regularized 
+    grad_0 = (np.sum((sigmoid(np.dot(X,theta))-y)[:,None]*X,axis=0)/m)
+    
+    # Regularized
+    grad_reg = grad_0 + (reg_param/m)*theta
+
+    # Replace gradient for theta_0 with non-regularized gradient
+    grad_reg[0] = grad_0[0] 
+    
     # Don't bother with the gradient. Let scipy compute numerical
     # derivatives for you instead
 
-    return J
+    return (J,grad_reg)
 
 def oneVsAll(X, y, num_labels, reg_param):
     """"
@@ -54,21 +67,36 @@ def oneVsAll(X, y, num_labels, reg_param):
     n = np.size(X,1)
     theta = np.zeros((n,num_labels))
 
-    for c in range(1,num_labels+1):
-        outcome = np.array(y == c).astype(int)
-        initial_theta = theta[:,c-1]
-        res = minimize(lrCostFunction,
-                       initial_theta,
-                       #method='Newton-CG',
-                       args=(X,outcome,reg_param),
-                       jac=False, 
-                       options={'maxiter':400,
-                                'disp':True})
-
-        theta[:,c-1] = res.x
-        
+    # Function to find parameters for single logit
+    def findOptParam(p_num):
+        outcome = np.array(y == p_num).astype(int)
+        initial_theta = theta[:,p_num]
+        results = minimize(lrCostFunction,
+			   initial_theta,
+                           method='Newton-CG',
+                           args=(X,outcome,reg_param),
+                           jac=True,
+		           tol=1e-6,
+                           options={'maxiter':400,
+                                    'disp':True})
+        theta[:,p_num] = results.x
+    
+    
+    for digit in range(10):
+        findOptParam(digit)
+    
     return theta
 
 
 def predictOneVsAllAccuracy(est_theta,X):
-    return
+    """
+    Given a full set of parameters theta and training set X
+    returns the predicted probabilities for each of the possible
+    classifications. Classifies each observations by using the
+    highest predicted probability from the possible classifications.
+    """
+
+    probs = np.dot(X,est_theta)
+    predict = np.argmax(probs,axis=1)
+    
+    return predict

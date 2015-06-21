@@ -19,6 +19,8 @@ print("Loading training data...")
 raw_mat = scipy.io.loadmat("ex3data1.mat")
 X = raw_mat.get("X")
 y = raw_mat.get("y").flatten()
+y[y== 10] = 0
+
 m = np.hstack((np.ones((len(y),1)),X))# add column of ones
 
 # Randomly select 100 datapoints to display
@@ -37,3 +39,12 @@ input("Program paused, press enter to continue...")
 reg_param = 1.0
 theta = oneVsAll(m,y,10,reg_param)
 
+predictions = predictOneVsAllAccuracy(theta,m)
+accuracy = np.mean(y == predictions) * 100
+print("Training Accuracy: ", accuracy, "%")
+input("Program pauses, press enter to continue...")
+
+# =================== Part 3: Neural Networks ===================
+
+# Load pre-estimated weights
+print("Loading saved neural networks parameters...")
