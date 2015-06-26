@@ -53,22 +53,13 @@ theta1 = raw_params.get("Theta1") # 25 x 401
 theta2 = raw_params.get("Theta2") # 10 x 26
 
 
-# Issue here: something with 1 indexing of y. This is currently a hacky
-# way of fixing the problem. Clearer fix needed.
-predictions = predict(theta1,theta2,X) + 1
-predictions[predictions == 10] = 0
+# Note: Parameters in theta1,theta2 are based on 1 indexing. To make it work,
+#       we need to either adjust theta1 and theta2, or manipulate the
+#       predictions. Solution is to add 1 and take the mod with resepct to
+#       10 so 10s become zeros and everything else gets bumped up one.
+
+predictions = (predict(theta1,theta2,X) + 1) % 10
 accuracy = np.mean(y == predictions) * 100
 print("Training Accuracy with neural network: ", accuracy, "%")
 
-rp = np.random.permutation(range(5000))
 
-for i in rp:
-    # Show single image
-    print("Displaying example image \n ")
-    grid, ax2 = displayImage(X[i])
-    grid.show()
-    
-    pred = predict(theta1,theta2,X[i,:]) + 1
-    pred[pred == 10] = 0
-    print("Neural Network Prediction: ", pred, np.mod(pred,10))
-    input("Program paused... Press Enter to see another image")
