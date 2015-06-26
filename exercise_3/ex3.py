@@ -41,10 +41,34 @@ theta = oneVsAll(m,y,10,reg_param)
 
 predictions = predictOneVsAllAccuracy(theta,m)
 accuracy = np.mean(y == predictions) * 100
-print("Training Accuracy: ", accuracy, "%")
+print("Training Accuracy with logit: ", accuracy, "%")
 input("Program pauses, press enter to continue...")
 
 # =================== Part 3: Neural Networks ===================
 
 # Load pre-estimated weights
 print("Loading saved neural networks parameters...")
+raw_params = scipy.io.loadmat("ex3weights.mat")
+theta1 = raw_params.get("Theta1") # 25 x 401
+theta2 = raw_params.get("Theta2") # 10 x 26
+
+
+# Issue here: something with 1 indexing of y. This is currently a hacky
+# way of fixing the problem. Clearer fix needed.
+predictions = predict(theta1,theta2,X) + 1
+predictions[predictions == 10] = 0
+accuracy = np.mean(y == predictions) * 100
+print("Training Accuracy with neural network: ", accuracy, "%")
+
+rp = np.random.permutation(range(5000))
+
+for i in rp:
+    # Show single image
+    print("Displaying example image \n ")
+    grid, ax2 = displayImage(X[i])
+    grid.show()
+    
+    pred = predict(theta1,theta2,X[i,:]) + 1
+    pred[pred == 10] = 0
+    print("Neural Network Prediction: ", pred, np.mod(pred,10))
+    input("Program paused... Press Enter to see another image")

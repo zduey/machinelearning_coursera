@@ -22,6 +22,16 @@ def displayData(X):
 
     return (fig, ax)
 
+def displayImage(im):
+    """
+    Displays a single image stored as a column vector
+    """
+    fig2, ax2 = plt.subplots()
+    image = im.reshape(20,20).T
+    ax2.imshow(image,cmap='gray')
+    
+    return (fig2, ax2)
+
 def sigmoid(z):
     """ Returns the value from using x in the sigmoid function """
     
@@ -100,3 +110,28 @@ def predictOneVsAllAccuracy(est_theta,X):
     predict = np.argmax(probs,axis=1)
     
     return predict
+
+
+def predict(theta1,theta2,X):
+    m = len(X) # number of samples
+
+    if np.ndim(X) == 1:
+        X = X.reshape((-1,1))
+    
+    D1 = np.hstack((np.ones((m,1)),X))# add column of ones
+   
+    # Calculate hidden layer from theta1 parameters
+    hidden_pred = np.dot(D1,theta1.T) # (5000 x 401) x (401 x 25) = 5000 x 25
+    
+    # Add column of ones to new design matrix
+    ones = np.ones((len(hidden_pred),1)) # 5000 x 1
+    hidden_pred = sigmoid(hidden_pred)
+    hidden_pred = np.hstack((ones,hidden_pred)) # 5000 x 26
+    
+    # Calculate output layer from new design matrix
+    output_pred = np.dot(hidden_pred,theta2.T) # (5000 x 26) x (26 x 10)    
+    output_pred = sigmoid(output_pred)
+    # Get predictions
+    p = np.argmax(output_pred,axis=1)
+    
+    return p
