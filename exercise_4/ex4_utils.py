@@ -104,7 +104,7 @@ def nnCostFunction(nn_params,
 
 	# Calculate cost
         cost[i] = (np.sum((-init_y[i][:,None])*(np.log(h)) -
-	              (1-init_y[i][:,None])*(np.log(1-h))))/m
+	          (1-init_y[i][:,None])*(np.log(1-h))))/m
 
     final_cost = sum(cost)
     """
