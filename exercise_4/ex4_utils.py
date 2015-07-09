@@ -106,7 +106,11 @@ def nnCostFunction(nn_params,
         cost[i] = (np.sum((-init_y[i][:,None])*(np.log(h)) -
 	          (1-init_y[i][:,None])*(np.log(1-h))))/m
 
-    final_cost = sum(cost)
+    # Add regularization
+    reg = (reg_param/(2*m))*((np.sum(theta1[:,1:]**2)) + 
+	  (np.sum(theta2[:,1:]**2)))
+    
+    final_cost = sum(cost) + reg
     """
     # Gradient
     

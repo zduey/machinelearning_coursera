@@ -43,7 +43,7 @@ theta2 = raw_params.get("Theta2") # 10 x 26
 nn_params = np.append(theta1,theta2).reshape(-1)
 
 # Compute Cost -- Feed Forward
-reg_param = 0
+reg_param = 1.0
 cost = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
 		   X,y,reg_param)
 
