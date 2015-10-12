@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 import multiprocessing as mp
+from functools import partial
 
 def displayData(X):
     """
@@ -35,6 +36,10 @@ def sigmoid(z):
     
     return 1.0/(1 +  np.e**(-z))
 
+def sigmoidGradient(z):
+    """ Computes derivative of sigmoid function at value z """
+    return sigmoid(z)*(1-sigmoid(z))
+
 def predict(theta1,theta2,X):
     m = len(X) # number of samples
 
@@ -59,10 +64,8 @@ def predict(theta1,theta2,X):
     
     return p
 
-def nnCostFunction(nn_params,
-	    	   input_layer_size,
-		   hidden_layer_size,
-		   num_labels,X,y,reg_param):
+def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels,
+                   X,y,reg_param):
     """
     Computes loss using sum of square errors for a neural network
     using theta as the parameter vector for linear regression to fit 
@@ -82,7 +85,7 @@ def nnCostFunction(nn_params,
 					        hidden_layer_size + 1))
    
     # Turn scalar y values into a matrix of binary outcomes
-    init_y = np.zeros((len(y),num_labels)) # 5000 x 10
+    init_y = np.zeros((m,num_labels)) # 5000 x 10
  
     for i in range(m):
         init_y[i][y[i]] = 1
@@ -92,7 +95,10 @@ def nnCostFunction(nn_params,
     d = np.hstack((ones,X))# add column of ones
  
     # Compute cost by doing feedforward propogation with theta1 and theta2
-    cost = [0]*m 
+    cost = [0]*m
+    # Initalize gradient vector
+    D1 = np.zeros_like(theta1)
+    D2 = np.zeros_like(theta2)
     for i in range(m):
 	# Feed Forward Propogation
         a1 = d[i][:,None] # 401 x 1
@@ -101,30 +107,134 @@ def nnCostFunction(nn_params,
         a2 = np.vstack((np.ones(1),a2)) # 26 x 1
         z3 = np.dot(theta2,a2) #10 x 1
         h = sigmoid(z3) # 10 x 1
+        a3 = h
 
 	# Calculate cost
         cost[i] = (np.sum((-init_y[i][:,None])*(np.log(h)) -
 	          (1-init_y[i][:,None])*(np.log(1-h))))/m
+	
+	# Calculate Gradient
+        d3 = a3 - init_y[i][:,None]
+        d2 = np.dot(theta2.T,d3)[1:]*(sigmoidGradient(z2))
+	
+        # Accumulate 'errors' for gradient calculation
+        D1 = D1 + np.dot(d2,a1.T)
+        D2 = D2 + np.dot(d3,a2.T)
 
     # Add regularization
     reg = (reg_param/(2*m))*((np.sum(theta1[:,1:]**2)) + 
 	  (np.sum(theta2[:,1:]**2)))
     
+    # Compute final gradient with regularization
+    grad1 = (1.0/m)*D1 + (reg_param/m)*theta1
+    grad1[0] = grad1[0] - (reg_param/m)*theta1[0]
+    
+    grad2 = (1.0/m)*D2 + (reg_param/m)*theta2
+    grad2[0] = grad2[0] - (reg_param/m)*theta2[0]
+    
+    # Unroll gradient
+    grad = np.append(grad1,grad2).reshape(-1)
+    
     final_cost = sum(cost) + reg
-    """
-    # Gradient
-    
-    # Non-regularized 
-    grad_0 = (np.sum((sigmoid(np.dot(X,theta))-y)[:,None]*X,axis=0)/m)
-    
-    # Regularized
-    grad_reg = grad_0 + (reg_param/m)*theta
 
-    # Replace gradient for theta_0 with non-regularized gradient
-    grad_reg[0] = grad_0[0] 
+    return grad, final_cost
+
+
+
+def randInitializeWeights(L_in,L_out):
+    """
+    Randomly initalize the weights of a layer with L_in incoming
+    connections and L_out outgoing connections. Avoids symmetry
+    problems when training the neural network.
+    """
+    randWeights = np.random.uniform(low=-.12,high=.12,
+                                    size=(L_in,L_out))
+    return randWeights
+
+def debugInitializeWeights(fan_in, fan_out):
+    """
+    Initializes the weights of a layer with fan_in incoming connections and
+    fan_out outgoing connections using a fixed set of values.
+    """
     
-    # Don't bother with the gradient. Let scipy compute numerical
-    # derivatives for you instead
+    # Set W to zero matrix
+    W = np.zeros((fan_out,fan_in + 1))
+
+    # Initialize W using "sin". This ensures that W is always of the same
+    # values and will be useful in debugging.
+    W = np.array([np.sin(w) for w in 
+                 range(np.size(W))]).reshape((np.size(W,0),np.size(W,1)))
+    
+    return W
+
+def computeNumericalGradient(J,theta):
+    """
+    Computes the gradient of J around theta using finite differences and 
+    yields a numerical estimate of the gradient.
+    """
+    
+    numgrad = np.zeros_like(theta)
+    perturb = np.zeros_like(theta)
+    tol = 1e-4
+    
+    for p in range(len(theta)):
+        # Set perturbation vector
+        perturb[p] = tol
+        loss1 = J(theta[p] - perturb)
+        loss2 = J(theta[p] + perturb)
+	
+        # Compute numerical gradient
+        numgrad[p] = (loss2 - loss1)/(2 * tol)
+        perturb[p] = 0
+
+	
+    return numgrad
+
+def checkNNGradients(reg_param):
+    """
+    Creates a small neural network to check the back propogation gradients.
+    Outputs the analytical gradients produced by the back prop code and the
+    numerical gradients computed using the computeNumericalGradient function.
+    These should result in very similar values.
     """
 
-    return final_cost
+    # Set up small NN
+    input_layer_size = 3
+    hidden_layer_size = 5
+    num_labels = 3
+    m = 5
+
+    # Generate some random test data
+    Theta2 = debugInitializeWeights(hidden_layer_size,input_layer_size)
+    Theta1 = debugInitializeWeights(num_labels,hidden_layer_size)
+
+    # Reusing debugInitializeWeights to get random X
+    X = debugInitializeWeights(input_layer_size - 1, m)
+
+    # Set each element of y to be in [0,num_labels]
+    y = [(i % num_labels) for i in range(m)]
+
+    # Unroll parameters
+    nn_params = np.append(Theta1,Theta2).reshape(-1)
+
+    # Compute Cost
+    grad, cost = nnCostFunction(nn_params,
+                                input_layer_size,
+                				hidden_layer_size,
+                				num_labels,
+                				X,
+                				y,
+                				reg_param)
+    def reduced_cost_func(p):
+        """ Cheaply decorated nnCostFunction """
+        return nnCostFunction(p,input_layer_size,hidden_layer_size,num_labels,
+                              X,y,reg_param)[1]
+
+    numgrad = computeNumericalGradient(reduced_cost_func,nn_params)
+
+    # Check two gradients
+    np.testing.assert_almost_equal(grad, numgrad)
+
+    return
+
+
