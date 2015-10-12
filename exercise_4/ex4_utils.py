@@ -7,10 +7,11 @@ def displayData(X):
     """
     Displays 2D data stored in design matrix in a nice grid.
     """
-    fig, ax = plt.subplots(10,10,sharex=True,sharey=True)
+    num_plots = int(np.size(X,0)**.5)
+    fig, ax = plt.subplots(num_plots,num_plots,sharex=True,sharey=True)
     img_num = 0
-    for i in range(10):
-        for j in range(10):
+    for i in range(num_plots):
+        for j in range(num_plots):
             # Convert column vector into 20x20 pixel matrix
             # You have to transpose to have them display correctly
             img = X[img_num,:].reshape(20,20).T
@@ -201,8 +202,8 @@ def checkNNGradients(reg_param):
     m = 5
 
     # Generate some random test data
-    Theta2 = debugInitializeWeights(hidden_layer_size,input_layer_size)
-    Theta1 = debugInitializeWeights(num_labels,hidden_layer_size)
+    Theta1 = debugInitializeWeights(hidden_layer_size,input_layer_size)
+    Theta2 = debugInitializeWeights(num_labels,hidden_layer_size)
 
     # Reusing debugInitializeWeights to get random X
     X = debugInitializeWeights(input_layer_size - 1, m)
@@ -231,29 +232,5 @@ def checkNNGradients(reg_param):
     np.testing.assert_almost_equal(grad, numgrad)
 
     return
-
-def predict(theta1,theta2,X):
-    m = len(X) # number of samples
-
-    if np.ndim(X) == 1:
-        X = X.reshape((-1,1))
-    
-    D1 = np.hstack((np.ones((m,1)),X))# add column of ones
-   
-    # Calculate hidden layer from theta1 parameters
-    hidden_pred = np.dot(D1,theta1.T) # (5000 x 401) x (401 x 25) = 5000 x 25
-    
-    # Add column of ones to new design matrix
-    ones = np.ones((len(hidden_pred),1)) # 5000 x 1
-    hidden_pred = sigmoid(hidden_pred)
-    hidden_pred = np.hstack((ones,hidden_pred)) # 5000 x 26
-    
-    # Calculate output layer from new design matrix
-    output_pred = np.dot(hidden_pred,theta2.T) # (5000 x 26) x (26 x 10)    
-    output_pred = sigmoid(output_pred)
-    # Get predictions
-    p = np.argmax(output_pred,axis=1)
-    
-    return p
 
 
