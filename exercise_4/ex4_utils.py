@@ -124,17 +124,17 @@ def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels,
 	      (np.sum(theta2[:,1:]**2)))
     
     # Compute final gradient with regularization
-    # grad1 = (1.0/m)*D1 + (reg_param/m)*theta1
-    # grad1[0] = grad1[0] - (reg_param/m)*theta1[0]
+    grad1 = (1.0/m)*D1 + (reg_param/m)*theta1
+    grad1[0] = grad1[0] - (reg_param/m)*theta1[0]
     
-    # grad2 = (1.0/m)*D2 + (reg_param/m)*theta2
-    # grad2[0] = grad2[0] - (reg_param/m)*theta2[0]
+    grad2 = (1.0/m)*D2 + (reg_param/m)*theta2
+    grad2[0] = grad2[0] - (reg_param/m)*theta2[0]
     
     # Append and unroll gradient
     grad = np.append(grad1,grad2).reshape(-1)
     final_cost = sum(cost) + reg
 
-    return grad, final_cost
+    return (final_cost, grad)
 
 
 
@@ -187,14 +187,13 @@ def computeNumericalGradient(J,theta):
 	
     return numgrad
 
-def checkNNGradients(reg_param=0):
+def checkNNGradients(reg_param):
     """
     Creates a small neural network to check the back propogation gradients.
     Outputs the analytical gradients produced by the back prop code and the
     numerical gradients computed using the computeNumericalGradient function.
     These should result in very similar values.
     """
-
     # Set up small NN
     input_layer_size = 3
     hidden_layer_size = 5
@@ -215,17 +214,16 @@ def checkNNGradients(reg_param=0):
     nn_params = np.append(Theta1,Theta2).reshape(-1)
 
     # Compute Cost
-    grad, cost = nnCostFunction(nn_params,
+    cost, grad = nnCostFunction(nn_params,
                                 input_layer_size,
                 				hidden_layer_size,
                 				num_labels,
-                				X,
-                				y,
-                				reg_param)
+                				X, y, reg_param)
+
     def reduced_cost_func(p):
         """ Cheaply decorated nnCostFunction """
         return nnCostFunction(p,input_layer_size,hidden_layer_size,num_labels,
-                              X,y,reg_param)[1]
+                              X,y,reg_param)[0]
 
     numgrad = computeNumericalGradient(reduced_cost_func,nn_params)
 
@@ -233,5 +231,29 @@ def checkNNGradients(reg_param=0):
     np.testing.assert_almost_equal(grad, numgrad)
 
     return
+
+def predict(theta1,theta2,X):
+    m = len(X) # number of samples
+
+    if np.ndim(X) == 1:
+        X = X.reshape((-1,1))
+    
+    D1 = np.hstack((np.ones((m,1)),X))# add column of ones
+   
+    # Calculate hidden layer from theta1 parameters
+    hidden_pred = np.dot(D1,theta1.T) # (5000 x 401) x (401 x 25) = 5000 x 25
+    
+    # Add column of ones to new design matrix
+    ones = np.ones((len(hidden_pred),1)) # 5000 x 1
+    hidden_pred = sigmoid(hidden_pred)
+    hidden_pred = np.hstack((ones,hidden_pred)) # 5000 x 26
+    
+    # Calculate output layer from new design matrix
+    output_pred = np.dot(hidden_pred,theta2.T) # (5000 x 26) x (26 x 10)    
+    output_pred = sigmoid(output_pred)
+    # Get predictions
+    p = np.argmax(output_pred,axis=1)
+    
+    return p
 
 

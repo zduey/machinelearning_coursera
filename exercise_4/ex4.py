@@ -41,8 +41,8 @@ nn_params = np.append(theta1,theta2).reshape(-1)
 # Compute Unregularized Cost
 print("Checking cost function without regularization...")
 reg_param = 0.0
-g,cost = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
-		                    X,y,reg_param)
+cost, g = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
+		                     X,y,reg_param)
 
 # Test for correct cost
 np.testing.assert_almost_equal(0.287629,cost,decimal=6, err_msg="Cost incorrect.")
@@ -51,8 +51,8 @@ np.testing.assert_almost_equal(0.287629,cost,decimal=6, err_msg="Cost incorrect.
 # Compute Regularized Cost
 print("Checking cost function with regularization...")
 reg_param = 1.0
-g,reg_cost = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
-		            X,y,reg_param)
+reg_cost, g = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
+		                        X,y,reg_param)
 np.testing.assert_almost_equal(0.383770,reg_cost,decimal=6, 
                                err_msg="Regularized Cost incorrect.")
 
@@ -65,40 +65,55 @@ np.testing.assert_almost_equal(0.25, g[2],decimal=2, err_msg="Sigmoid function i
 
 # Initialize neural network parameters
 print("Initializing neural network parameters...")
-initial_theta1 = randInitializeWeights(input_layer_size,hidden_layer_size)
-initial_theta2 = randInitializeWeights(hidden_layer_size,num_labels)
+initial_theta1 = randInitializeWeights(input_layer_size+1,hidden_layer_size)
+initial_theta2 = randInitializeWeights(hidden_layer_size+1,num_labels)
 
 # Unroll parameters
 initial_nn_params = np.append(initial_theta1,initial_theta2).reshape(-1)
 
 reg_param = 0.0
-g, initial_cost = nnCostFunction(initial_nn_params,input_layer_size,
+initial_cost, g = nnCostFunction(initial_nn_params,input_layer_size,
                                  hidden_layer_size,num_labels,X,y,reg_param)
 
 print("The initial cost after random initialization: ", initial_cost)
 
 # Check gradients
-checkNNGradients()
+checkNNGradients(0)
 
 # Implement Regularization
-reg_param = 3.0
-checkNNGradients(reg_param)
+punisher = 3.0
+checkNNGradients(punisher)
 
 # Debugging value of the cost function
-reg_param = 1.0
+reg_param = 10
 debug_J = nnCostFunction(initial_nn_params,input_layer_size,
-                         hidden_layer_size,num_labels,X,y,reg_param)
-
-print("Cost at fixed debugging parameters with lambda = 10 is: ", debug_J[1])
+                         hidden_layer_size,num_labels,X,y,reg_param)[0]
+np.testing.assert_almost_equal(debug_J, 0.576051)
 
 
 # Train NN Parameters
-
 reg_param = 0.0
-results = minimize(costfunc,
+def reduced_cost_func(p):
+    """ Cheaply decorated nnCostFunction """
+    return nnCostFunction(p,input_layer_size,hidden_layer_size,num_labels,
+                          X,y,reg_param)
+
+results = minimize(reduced_cost_func,
                    initial_nn_params,
+                   method="CG",
                    jac=True,
-		               tol=1e-6,
-                   options={'maxiter':50})
+                   options={'maxiter':50, "disp":True})
 
+fitted_params = results.x
+# Reshape fitted_params back into neural network
+theta1 = fitted_params[:(hidden_layer_size * 
+             (input_layer_size + 1))].reshape((hidden_layer_size, 
+                                       input_layer_size + 1))
 
+theta2 = fitted_params[-((hidden_layer_size + 1) * 
+                      num_labels):].reshape((num_labels,
+                                   hidden_layer_size + 1)) 
+
+predictions = predict(theta1, theta2, X)
+accuracy = np.mean(y == predictions) * 100
+print("Training Accuracy with neural network: ", accuracy, "%")
