@@ -2,8 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-import multiprocessing as mp
-from functools import partial
 
 def displayData(X):
     """
@@ -77,12 +75,12 @@ def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels,
     
     # Reshape nn_params back into neural network
     theta1 = nn_params[:(hidden_layer_size * 
-			 (input_layer_size + 1))].reshape((hidden_layer_size, 
-							  input_layer_size + 1))
+			           (input_layer_size + 1))].reshape((hidden_layer_size, 
+							                             input_layer_size + 1))
   
     theta2 = nn_params[-((hidden_layer_size + 1) * 
-			 num_labels):].reshape((num_labels,
-					        hidden_layer_size + 1))
+                          num_labels):].reshape((num_labels,
+					                             hidden_layer_size + 1))
    
     # Turn scalar y values into a matrix of binary outcomes
     init_y = np.zeros((m,num_labels)) # 5000 x 10
@@ -107,34 +105,33 @@ def nnCostFunction(nn_params, input_layer_size, hidden_layer_size, num_labels,
         a2 = np.vstack((np.ones(1),a2)) # 26 x 1
         z3 = np.dot(theta2,a2) #10 x 1
         h = sigmoid(z3) # 10 x 1
-        a3 = h
+        a3 = h # 10 x 1
 
 	# Calculate cost
         cost[i] = (np.sum((-init_y[i][:,None])*(np.log(h)) -
-	          (1-init_y[i][:,None])*(np.log(1-h))))/m
+	              (1-init_y[i][:,None])*(np.log(1-h))))/m
 	
 	# Calculate Gradient
         d3 = a3 - init_y[i][:,None]
         d2 = np.dot(theta2.T,d3)[1:]*(sigmoidGradient(z2))
 	
         # Accumulate 'errors' for gradient calculation
-        D1 = D1 + np.dot(d2,a1.T)
-        D2 = D2 + np.dot(d3,a2.T)
+        D1 = D1 + np.dot(d2,a1.T) # 25 x 401 (matches theta0)
+        D2 = D2 + np.dot(d3,a2.T) # 10 x 26 (matches theta1)
 
     # Add regularization
     reg = (reg_param/(2*m))*((np.sum(theta1[:,1:]**2)) + 
-	  (np.sum(theta2[:,1:]**2)))
+	      (np.sum(theta2[:,1:]**2)))
     
     # Compute final gradient with regularization
-    grad1 = (1.0/m)*D1 + (reg_param/m)*theta1
-    grad1[0] = grad1[0] - (reg_param/m)*theta1[0]
+    # grad1 = (1.0/m)*D1 + (reg_param/m)*theta1
+    # grad1[0] = grad1[0] - (reg_param/m)*theta1[0]
     
-    grad2 = (1.0/m)*D2 + (reg_param/m)*theta2
-    grad2[0] = grad2[0] - (reg_param/m)*theta2[0]
+    # grad2 = (1.0/m)*D2 + (reg_param/m)*theta2
+    # grad2[0] = grad2[0] - (reg_param/m)*theta2[0]
     
-    # Unroll gradient
+    # Append and unroll gradient
     grad = np.append(grad1,grad2).reshape(-1)
-    
     final_cost = sum(cost) + reg
 
     return grad, final_cost
@@ -180,8 +177,8 @@ def computeNumericalGradient(J,theta):
     for p in range(len(theta)):
         # Set perturbation vector
         perturb[p] = tol
-        loss1 = J(theta[p] - perturb)
-        loss2 = J(theta[p] + perturb)
+        loss1 = J(theta - perturb)
+        loss2 = J(theta + perturb)
 	
         # Compute numerical gradient
         numgrad[p] = (loss2 - loss1)/(2 * tol)
@@ -190,7 +187,7 @@ def computeNumericalGradient(J,theta):
 	
     return numgrad
 
-def checkNNGradients(reg_param):
+def checkNNGradients(reg_param=0):
     """
     Creates a small neural network to check the back propogation gradients.
     Outputs the analytical gradients produced by the back prop code and the

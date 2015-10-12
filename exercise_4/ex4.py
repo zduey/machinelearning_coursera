@@ -28,7 +28,6 @@ sel = X[rand_indices,:]
 # Display the data
 digit_grid, ax = displayData(sel)
 digit_grid.show()
-input("Program paused, press enter to continue...")
 
 print("Loading neural network parameters \n")
 
@@ -48,22 +47,21 @@ g,cost = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
 # Test for correct cost
 np.testing.assert_almost_equal(0.287629,cost,decimal=6, err_msg="Cost incorrect.")
 
-input("Program paused, press enter to continue...")
 
 # Compute Regularized Cost
 print("Checking cost function with regularization...")
 reg_param = 1.0
 g,reg_cost = nnCostFunction(nn_params,input_layer_size,hidden_layer_size,num_labels,
 		            X,y,reg_param)
-np.testing.assert_almost_equal(0.383770,reg_cost,decimal=6, err_msg="Regularized Cost incorrect.")
-input("Program paused, press enter to continue...")
+np.testing.assert_almost_equal(0.383770,reg_cost,decimal=6, 
+                               err_msg="Regularized Cost incorrect.")
+
 
 # Checking sigmoid gradient
 print("Checking sigmoid gradient...")
-
 vals = np.array([1,-0.5,0,0.5,1])
 g = sigmoidGradient(vals)
-np.testing.assert_almost_equal(0.25, g[2],decimal=2.err_msg="Sigmoid function incorrect")
+np.testing.assert_almost_equal(0.25, g[2],decimal=2, err_msg="Sigmoid function incorrect")
 
 # Initialize neural network parameters
 print("Initializing neural network parameters...")
@@ -74,15 +72,13 @@ initial_theta2 = randInitializeWeights(hidden_layer_size,num_labels)
 initial_nn_params = np.append(initial_theta1,initial_theta2).reshape(-1)
 
 reg_param = 0.0
-g,initial_cost = nnCostFunction(initial_nn_params,input_layer_size,
-                                    hidden_layer_size,num_labels,X,y,reg_param)
+g, initial_cost = nnCostFunction(initial_nn_params,input_layer_size,
+                                 hidden_layer_size,num_labels,X,y,reg_param)
 
 print("The initial cost after random initialization: ", initial_cost)
 
-# Implement Backpropogation
 # Check gradients
-checkNNGradients(0.0)
-input("Program paused, press enter to continue...")
+checkNNGradients()
 
 # Implement Regularization
 reg_param = 3.0
@@ -97,17 +93,12 @@ print("Cost at fixed debugging parameters with lambda = 10 is: ", debug_J[1])
 
 
 # Train NN Parameters
-# Compute Numerical Gradient
-def costfunc(p):
-    grad, cost = nnCostFunction(p,input_layer_size,hidden_layer_size,
-				num_labels,X,y,reg_param)
-    return grad, cost
 
 reg_param = 0.0
 results = minimize(costfunc,
-		   initial_nn_params,
+                   initial_nn_params,
                    jac=True,
-		   tol=1e-6,
+		               tol=1e-6,
                    options={'maxiter':50})
 
 
