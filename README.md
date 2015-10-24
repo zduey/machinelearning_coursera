@@ -3,9 +3,7 @@
 This repo proivdes python-based solutions to the Coursera Machine Learning
 course taught by professor Andrew NG.
 
-In this first iteration, solutions mimic the MATLAB/Octave paradigm of matrix/vector
-arithmetic to complete the exercises. In many cases, there are simpler and more 
-'pythonic' ways to complete the exercises.
+Solutions mimic the MATLAB/Octave code provided through Coursera. The scikit-learn module provides canned implementations for each of these algorithms, but at the potential expense of understanding how they work. These basic versions are being used to solidify concepts and gain familiarity with the Python scientific computing stack.
 
 ## Orgnaization of repo
 Unlike in the coursera course, individual functions are not written in seperate
