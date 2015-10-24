@@ -1,4 +1,3 @@
-# Extra functions for use in ex2.py
 
 # Imports
 import numpy as np
@@ -106,25 +105,6 @@ def costFunctionReg(theta,X,y,reg_param):
     
     return J
 
-"""
-else
-        # Here is the grid range
-        u = linspace(-1, 1.5, 50)
-        v = linspace(-1, 1.5, 50)
-
-        z = zeros(length(u), length(v))
-        # Evaluate z = theta*x over the grid
-        for i = 1:length(u)
-            for j = 1:length(v)
-                z(i,j) = mapFeature(u(i), v(j))*theta
-            end
-        end
-        z = z' # important to transpose z before calling contour
-
-        # Plot z = 0
-        # Notice you need to specify the range [0, 0]
-        contour(u, v, z, [0, 0], 'LineWidth', 2)
-"""
 
 def plotDecisionBoundary(theta,X,y):
     """
@@ -144,7 +124,6 @@ def plotDecisionBoundary(theta,X,y):
         plot_x = np.array([min(X[:,1])-2,max(X[:,2])+2])
 
         # Calculate the decision boundary line
-        plot_y = (-1.0/theta[2])*(theta[1]*plot_x + theta[0])
 
         # Add boundary and adjust axes
         ax.plot(plot_x,plot_y)
@@ -170,5 +149,6 @@ def plotDecisionBoundary(theta,X,y):
     ax.contour(u,v,z,levels=[0])
 
     return (fig,ax)
+
 
 
