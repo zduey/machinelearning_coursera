@@ -21,7 +21,7 @@ functions for each exercise.
 
 **Exercise 4:** Neural Network Learning (working)
 
-**Exercise 5:** Regularized Linear Regression and Bias/Variance (not started)
+**Exercise 5:** Regularized Linear Regression and Bias/Variance (working)
 
 **Exercise 6:** Support Vector Machines (not started)
 
