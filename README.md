@@ -23,7 +23,7 @@ functions for each exercise.
 
 **Exercise 6:** Support Vector Machines (not started)
 
-**Exercise 7:** K-Means Clustering and PCA (not started)
+**Exercise 7:** K-Means Clustering and PCA (working)
 
 **Exercise 8:** Anomaly Detection and Recommender Systems (not started)
 
