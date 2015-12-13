@@ -25,5 +25,5 @@ functions for each exercise.
 
 **Exercise 7:** K-Means Clustering and PCA (working)
 
-**Exercise 8:** Anomaly Detection and Recommender Systems (not started)
+**Exercise 8:** Anomaly Detection and Recommender Systems (working)
 
