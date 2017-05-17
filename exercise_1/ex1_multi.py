@@ -20,8 +20,8 @@ print('Loading data ...','\n')
 ## Load Data
 print('Plotting Data ...','\n')
 
-data = pd.read_csv("ex1data2.txt",names=["size","bedrooms","price"])
-s = np.array(data.size)
+data = pd.read_csv("ex1data2.txt",names=["size1","bedrooms","price"])
+s = np.array(data.size1)
 r = np.array(data.bedrooms)
 p = np.array(data.price)
 m = len(r) # number of training examples
