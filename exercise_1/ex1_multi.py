@@ -57,7 +57,7 @@ num_iters = 400
 theta = np.zeros(3)
 
 # Multiple Dimension Gradient Descent
-theta, hist = gradientDescent(X, p, theta, alpha, num_iters)
+theta, hist = gradientDescentMulti(X, p, theta, alpha, num_iters)
 
 # Plot the convergence graph
 fig = plt.figure()
