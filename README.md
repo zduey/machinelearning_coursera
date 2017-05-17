@@ -1,6 +1,6 @@
 # Python Code for Coursera Machine Learning
 
-This repo proivdes python-based solutions to the Coursera Machine Learning
+This repo provides python-based solutions to the Coursera Machine Learning
 course taught by professor Andrew NG.
 
 Solutions mimic the MATLAB/Octave code provided through Coursera. The scikit-learn module provides canned implementations for each of these algorithms, but at the potential expense of understanding how they work. These basic versions are being used to solidify concepts and gain familiarity with the Python scientific computing stack.
